@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mei Tong Kim</title>
+<meta name="description" content="Mei Tong Kim — founder, linguistics nerd, builder of things that matter.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --black: #0a0a0a; --off: #f9f9f7; --mid: #888; --light: #ddd;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --mono: 'DM Mono', monospace;
+}
+html { font-size: 17px; }
+body { background: var(--off); color: var(--black); font-family: var(--serif); min-height: 100vh; overflow-x: hidden; cursor: none; }
+
+/* ── Cursor ── */
+.cursor { position: fixed; width: 8px; height: 8px; background: var(--black); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .2s, height .2s; }
+.cursor-ring { position: fixed; width: 32px; height: 32px; border: 1px solid var(--black); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); opacity: .5; transition: width .25s, height .25s, opacity .25s; }
+@media (hover: none) { .cursor, .cursor-ring { display: none; } body { cursor: auto; } a { cursor: pointer; } }
+
+/* ── Animations ── */
+@keyframes grow   { to { width: 100%; } }
+@keyframes up     { to { opacity: 1; transform: translateY(0); } }
+@keyframes inn    { to { opacity: 1; } }
+@keyframes blink  { 0%,100% { border-color: var(--black); } 50% { border-color: transparent; } }
+@keyframes tfloat { 0% { opacity:1; transform:translateY(0) scale(1) rotate(-5deg); } 100% { opacity:0; transform:translateY(-90px) scale(1.7) rotate(14deg); } }
+@keyframes cardReveal { 0% { opacity:0; transform:translateY(30px) scale(.97); } 100% { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes slideIn { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+@keyframes slideOut { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(-30px); } }
+
+/* ── Page ── */
+.page { max-width: 680px; margin: 0 auto; padding: 8vh 2rem 12vh; }
+
+/* ══════════════════════════════════
+   ID CARD HERO
+══════════════════════════════════ */
+.id-card-wrap {
+  animation: cardReveal .9s cubic-bezier(.22,1,.36,1) .2s both;
+  margin-bottom: 3.5rem;
+}
+
+.id-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid #c8c8c8;
+  border-radius: 14px;
+  overflow: hidden;
+  padding: 0;
+  box-shadow: 0 2px 32px rgba(0,0,0,.07), 0 0 0 4px var(--off), 0 0 0 5px #d8d8d8;
+}
+
+/* subtle dot-grid texture */
+.id-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, #d0d0d0 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: .25;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.id-card-inner {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  min-height: 240px;
+}
+
+/* Left strip */
+.id-photo-col {
+  background: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1.4rem 1.2rem 1.2rem;
+  position: relative;
+}
+
+.id-photo-col::after {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 1px; height: 100%;
+  background: linear-gradient(to bottom, transparent, #444, transparent);
+}
+
+.id-org {
+  font-family: var(--mono);
+  font-size: .52rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: .8rem;
+  text-align: center;
+}
+
+.id-photo {
+  width: 110px; height: 130px;
+  border: 1.5px solid #333;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  background: #1a1a1a;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.id-photo img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top center;
+  filter: grayscale(100%) contrast(1.1);
+}
+
+.id-photo-placeholder {
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  font-style: italic;
+  font-weight: 300;
+  color: #555;
+}
+
+.id-stamp {
+  width: 54px; height: 54px;
+  border: 1.5px solid #333;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.id-stamp-inner {
+  font-family: var(--mono);
+  font-size: .42rem;
+  letter-spacing: .06em;
+  color: #666;
+  text-align: center;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+/* Right fields */
+.id-fields-col {
+  padding: 1.4rem 1.6rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.id-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+
+.id-title {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  line-height: 1;
+  color: var(--black);
+}
+
+.id-title em {
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.1rem;
+}
+
+.id-year {
+  font-family: var(--mono);
+  font-size: .62rem;
+  color: var(--mid);
+  letter-spacing: .05em;
+  text-align: right;
+  padding-top: 2px;
+}
+
+.id-field { margin-bottom: .6rem; }
+.id-label {
+  font-family: var(--mono);
+  font-size: .52rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 1px;
+}
+.id-value {
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  font-weight: 400;
+  color: var(--black);
+  line-height: 1.2;
+}
+
+.id-sig-row {
+  margin-top: auto;
+  padding-top: .9rem;
+  border-top: .5px solid #e8e8e8;
+  display: flex;
+  align-items: flex-end;
+  gap: .8rem;
+}
+
+.id-sig-label {
+  font-family: var(--mono);
+  font-size: .5rem;
+  letter-spacing: .1em;
+  color: #bbb;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.id-sig {
+  font-family: 'Playfair Display', var(--serif);
+  font-style: italic;
+  font-size: 1.4rem;
+  color: var(--black);
+  border-bottom: 1px solid #ccc;
+  flex: 1;
+  padding-bottom: 2px;
+  line-height: 1;
+}
+
+/* Card bottom bar */
+.id-barcode {
+  height: 28px;
+  background: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.id-barcode::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0, rgba(255,255,255,.08) 2px, transparent 2px, transparent 6px);
+}
+
+.id-barcode-text {
+  font-family: var(--mono);
+  font-size: .48rem;
+  color: rgba(255,255,255,.35);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  position: relative; z-index: 1;
+}
+
+@media (max-width: 520px) {
+  .id-card-inner { grid-template-columns: 130px 1fr; }
+  .id-photo { width: 90px; height: 108px; }
+  .id-title { font-size: 1.2rem; }
+}
+
+/* ══════════════════════════════════
+   REST OF PAGE
+══════════════════════════════════ */
+.top-rule { width: 0; height: 1px; background: var(--black); margin-bottom: 2.8rem; animation: grow .9s cubic-bezier(.77,0,.18,1) .8s forwards; }
+
+.name-block { opacity: 0; transform: translateY(18px); animation: up .8s ease 1s forwards; margin-bottom: 1.4rem; }
+h1 { font-weight: 300; font-size: clamp(2rem, 5.5vw, 3.4rem); line-height: 1.08; letter-spacing: -.02em; }
+.gw { font-style: italic; }
+.ty { border-right: 2px solid var(--black); padding-right: 2px; animation: blink .75s step-end infinite; }
+.sub { font-weight: 300; font-style: italic; font-size: clamp(.85rem, 1.8vw, 1.08rem); color: var(--mid); margin-top: .22rem; }
+.rl { margin-top: .9rem; font-weight: 300; font-size: clamp(1.15rem, 2.6vw, 1.6rem); opacity: 0; transform: translateY(10px); animation: up .7s ease 1.15s forwards; }
+.rw { font-style: italic; font-weight: 400; border-bottom: 1.5px solid var(--black); padding-bottom: 1px; }
+.tagline { margin-top: .9rem; font-family: var(--mono); font-size: .66rem; font-weight: 300; color: var(--mid); line-height: 1.8; opacity: 0; transform: translateY(10px); animation: up .7s ease 1.25s forwards; }
+
+/* On my mind */
+.omm { margin: 2.2rem 0; opacity: 0; transform: translateY(12px); animation: up .7s ease 1.3s forwards; }
+.sl { font-family: var(--mono); font-size: .59rem; letter-spacing: .13em; text-transform: uppercase; color: var(--mid); display: flex; align-items: center; gap: .75rem; margin-bottom: .8rem; }
+.sl::after { content: ''; flex: 1; height: 1px; background: #e8e8e8; }
+.omm-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.omm-tag { font-family: var(--serif); font-size: .9rem; font-style: italic; border: .5px solid #ccc; border-radius: 99px; padding: 4px 14px; transition: all .22s; cursor: default; white-space: nowrap; }
+.omm-tag:hover { background: var(--black); color: var(--off); border-color: var(--black); }
+
+/* Divider & Bio */
+.divl { height: 1px; background: #ddd; margin: 1.8rem 0; opacity: 0; animation: inn .6s ease 1.4s forwards; }
+.bio { font-size: 1.07rem; line-height: 1.92; font-weight: 300; opacity: 0; transform: translateY(12px); animation: up .7s ease 1.45s forwards; }
+.bio + .bio { margin-top: 1rem; animation-delay: 1.52s; }
+.bio + .bio + .bio { margin-top: 1rem; animation-delay: 1.59s; }
+.bio + .bio + .bio + .bio { margin-top: 1rem; animation-delay: 1.66s; }
+.bio em { font-style: italic; }
+
+/* Sections */
+.sections { margin-top: 2.5rem; }
+.section { margin-bottom: 2.2rem; opacity: 0; transform: translateY(14px); }
+.section:nth-child(1) { animation: up .7s ease 1.7s forwards; }
+.section:nth-child(2) { animation: up .7s ease 1.85s forwards; }
+.section:nth-child(3) { animation: up .7s ease 2.0s forwards; }
+.section:nth-child(4) { animation: up .7s ease 2.15s forwards; }
+
+ul { list-style: none; }
+ul li { font-size: 1rem; font-weight: 300; line-height: 1.75; padding: .25rem 0; display: flex; gap: .72rem; align-items: flex-start; }
+ul li::before { content: '—'; color: #bbb; flex-shrink: 0; padding-top: .08rem; }
+ul li em { font-style: italic; }
+.li-text { flex: 1; }
+
+a { color: var(--black); text-decoration: none; border-bottom: 1px solid #bbb; transition: border-color .2s; cursor: none; }
+a:hover { border-color: var(--black); }
+.nat { font-style: italic; transition: opacity .35s; }
+
+/* ══════════════════════════════════
+   PUZZLE — categorised
+══════════════════════════════════ */
+.puzz {
+  margin: 2.8rem 0;
+  padding: 1.4rem 1.6rem;
+  border: .5px solid #e0e0e0;
+  border-radius: 12px;
+  opacity: 0;
+  animation: inn .7s ease 2.2s forwards;
+}
+
+.p-title {
+  font-family: var(--mono);
+  font-size: .58rem; letter-spacing: .13em; text-transform: uppercase; color: #bbb;
+  margin-bottom: 1.2rem;
+}
+
+.chip-groups { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.4rem; }
+.chip-group-label { font-family: var(--mono); font-size: .54rem; letter-spacing: .1em; text-transform: uppercase; color: #ccc; margin-bottom: .5rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font-family: var(--serif); font-size: .88rem; font-style: italic;
+  padding: 4px 13px; border: .5px solid var(--black); border-radius: 99px;
+  cursor: grab; user-select: none;
+  transition: background .15s, color .15s, opacity .2s;
+  white-space: nowrap;
+}
+.chip:active { cursor: grabbing; }
+.chip.dragging { opacity: .3; }
+.chip.used { opacity: .18; pointer-events: none; border-style: dashed; }
+
+.slot-row {
+  font-family: var(--serif); font-size: .97rem; font-weight: 300;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 9px; flex-wrap: wrap;
+}
+.slot {
+  min-width: 130px; height: 32px;
+  border-bottom: 1.5px dashed #ccc;
+  display: inline-flex; align-items: center; padding: 0 8px;
+  color: #ccc; font-style: italic; font-size: .85rem;
+  border-radius: 4px 4px 0 0;
+  transition: border-color .2s, background .2s;
+}
+.slot.over { border-color: var(--black); background: #f0efec; }
+.slot.filled { border-style: solid; border-color: var(--black); color: var(--black); }
+.rbtn {
+  font-family: var(--mono); font-size: .58rem;
+  background: none; border: .5px solid #ddd; border-radius: 99px;
+  padding: 4px 12px; color: #bbb; cursor: pointer; margin-top: .8rem;
+  transition: all .2s;
+}
+.rbtn:hover { border-color: var(--black); color: var(--black); }
+
+/* ══════════════════════════════════
+   TESTIMONIALS CAROUSEL
+══════════════════════════════════ */
+.carousel-wrap {
+  margin: 3rem 0;
+  opacity: 0;
+  animation: inn .7s ease 2.3s forwards;
+}
+
+.carousel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1.4rem;
+}
+
+.carousel-nav { display: flex; gap: 8px; }
+.cnav-btn {
+  width: 34px; height: 34px;
+  border: .5px solid #ccc; border-radius: 50%;
+  background: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .9rem; color: var(--mid);
+  transition: all .2s;
+}
+.cnav-btn:hover { border-color: var(--black); color: var(--black); }
+
+.carousel-track {
+  position: relative;
+  min-height: 220px;
+}
+
+.c-card {
+  background: #fff;
+  border: .5px solid #e4e4e4;
+  border-radius: 12px;
+  padding: 1.6rem 1.8rem;
+  display: none;
+}
+.c-card.active { display: block; animation: slideIn .4s ease both; }
+.c-card.leaving { display: block; animation: slideOut .3s ease both; }
+
+.c-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.1rem; }
+.c-avatar {
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 1rem; font-style: italic;
+  font-weight: 300; color: #fff;
+}
+.av1 { background: #2a2a2a; }
+.av2 { background: #5a6e8c; }
+.av3 { background: #6b5b4e; }
+.av4 { background: #4a7a6d; }
+
+.c-meta { flex: 1; }
+.c-name { font-size: 1.05rem; font-weight: 400; color: var(--black); line-height: 1.2; margin-bottom: .12rem; }
+.c-role { font-family: var(--mono); font-size: .58rem; color: var(--mid); line-height: 1.55; }
+.c-date { font-family: var(--mono); font-size: .56rem; color: #bbb; margin-top: .25rem; }
+
+.c-divider { height: .5px; background: #f0f0f0; margin: .9rem 0; }
+
+.c-quote-mark {
+  font-family: var(--serif); font-size: 3rem; font-weight: 300;
+  color: #ebebeb; line-height: .8; margin-bottom: .3rem;
+}
+.c-text { font-size: .99rem; font-weight: 300; line-height: 1.85; color: #222; }
+
+/* dots */
+.c-dots { display: flex; gap: 6px; margin-top: 1.2rem; justify-content: center; }
+.c-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #ddd; border: none; cursor: pointer;
+  transition: background .2s, transform .2s;
+  padding: 0;
+}
+.c-dot.active { background: var(--black); transform: scale(1.2); }
+
+/* ══════════════════════════════════
+   CLOSING + FLOWER
+══════════════════════════════════ */
+.closing {
+  margin: 2rem 0 1.5rem; font-size: 1.05rem; font-weight: 300;
+  font-style: italic; line-height: 1.88; opacity: 0; transform: translateY(12px);
+  animation: up .7s ease 2.35s forwards;
+}
+
+.flw-area {
+  text-align: center; margin: 2rem 0;
+  padding: 2rem 1.5rem;
+  border-top: 1px solid #eee; border-bottom: 1px solid #eee;
+  opacity: 0; animation: inn .7s ease 2.45s forwards;
+  position: relative; min-height: 120px;
+}
+.fbtn {
+  font-family: var(--serif); font-size: 1rem; font-style: italic;
+  font-weight: 300; background: none; border: .5px solid var(--black);
+  border-radius: 99px; padding: 10px 28px; cursor: none;
+  transition: background .25s, color .25s;
+  display: block; margin: 0 auto .75rem;
+}
+.fbtn:hover { background: var(--black); color: var(--off); }
+.fctr { font-family: var(--mono); font-size: .61rem; color: #ccc; letter-spacing: .04em; }
+.ftotal { font-family: var(--mono); font-size: .58rem; color: #bbb; margin-top: .3rem; letter-spacing: .03em; }
+.tulip { position: absolute; pointer-events: none; font-size: 1.5rem; animation: tfloat 1.4s ease-out forwards; z-index: 5; }
+
+/* ══════════════════════════════════
+   CONTACT + WATERMARK
+══════════════════════════════════ */
+.contact {
+  margin-top: 2.5rem; padding-top: 1.6rem; border-top: 1px solid #ddd;
+  display: flex; flex-wrap: wrap; align-items: center;
+  font-family: var(--mono); font-size: .65rem; font-weight: 300; color: #bbb;
+  opacity: 0; animation: inn .7s ease 2.6s forwards;
+}
+.contact a { font-family: var(--mono); font-size: .65rem; color: var(--black); border-bottom: none; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #ccc; cursor: none; }
+.contact a:hover { text-decoration-color: var(--black); }
+.sep { margin: 0 .5rem; color: #ddd; }
+
+.watermark { position: fixed; bottom: 1.5rem; right: 2rem; font-family: var(--mono); font-size: .54rem; letter-spacing: .1em; color: #ccc; opacity: 0; animation: inn 1s ease 2.8s forwards; pointer-events: none; }
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #ccc; border-radius: 99px; }
+
+@media (max-width: 520px) {
+  html { font-size: 15px; }
+  .page { padding: 6vh 1.3rem 10vh; }
+  .watermark { display: none; }
+  .id-card-inner { grid-template-columns: 120px 1fr; }
+  .id-photo { width: 84px; height: 100px; }
+  .id-stamp { width: 44px; height: 44px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="page">
+
+  <!-- ══ ID CARD ══ -->
+  <div class="id-card-wrap">
+    <div class="id-card">
+      <div class="id-card-inner">
+
+        <!-- Photo col -->
+        <div class="id-photo-col">
+          <p class="id-org">meimonde · SGP</p>
+          <div class="id-photo">
+            <!-- Upload your photo to your repo as 'photo.png' and uncomment this line: -->
+            <img src="LinkedIn_Official_Photo.png" alt="Mei Tong Kim" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="id-photo-placeholder" style="display:none">M</div>
+          </div>
+          <div class="id-stamp">
+            <div class="id-stamp-inner">YSP<br>★<br>2026</div>
+          </div>
+        </div>
+
+        <!-- Fields col -->
+        <div class="id-fields-col">
+          <div class="id-header-row">
+            <div>
+              <div class="id-title">FOUNDER<br><em>& builder</em></div>
+            </div>
+            <div class="id-year">2025 — 26</div>
+          </div>
+
+          <div>
+            <div class="id-field">
+              <div class="id-label">Name</div>
+              <div class="id-value">Kim Mei Tong</div>
+            </div>
+            <div class="id-field">
+              <div class="id-label">Position</div>
+              <div class="id-value">Founder, YSP & SIB</div>
+            </div>
+            <div class="id-field">
+              <div class="id-label">Origin</div>
+              <div class="id-value">Singapore</div>
+            </div>
+            <div class="id-field">
+              <div class="id-label">Status</div>
+              <div class="id-value">Building worlds</div>
+            </div>
+          </div>
+
+          <div class="id-sig-row">
+            <span class="id-sig-label">X</span>
+            <span class="id-sig">Mei Tong Kim</span>
+          </div>
+        </div>
+
+      </div>
+      <div class="id-barcode">
+        <span class="id-barcode-text">meitongkim.github.io</span>
+        <span class="id-barcode-text">★ ★ ★ ★ ★ ★ ★ ★ ★</span>
+        <span class="id-barcode-text">@meimonde</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <div class="top-rule"></div>
+
+  <div class="name-block">
+    <h1><span class="gw"><span class="ty" id="gr"></span></span> I'm Mei Tong Kim</h1>
+    <p class="sub">or your favourite linguistics nerd.</p>
+    <p class="rl">I'm a <span class="rw" id="rw">Founder</span>.</p>
+  </div>
+
+  <p class="tagline">
+    2024: Built Social Issues Bubble — 12 members, 7 countries, one very stubborn dream.<br>
+    2026: Built Youth for Sustainable Policy — 20k views, 5 countries, still going.
+  </p>
+
+  <div class="omm">
+    <div class="sl">On my mind</div>
+    <div class="omm-tags">
+      <span class="omm-tag">Transformative climate justice</span>
+      <span class="omm-tag">Sociolinguistics</span>
+      <span class="omm-tag">How narratives shape our expectations</span>
+    </div>
+  </div>
+
+  <div class="divl"></div>
+
+  <p class="bio">Someone once asked me why I do what I do. I told them: I'm not doing anything for self-gratification. There is no monetary goal at all. I simply want to help people. That's it.</p>
+  <p class="bio">After all, what is life without experience?</p>
+  <p class="bio">I have this urge — a very consistent, very persistent urge — to put things in the right order. To build systems. To make things work. But equally, to break them when they stop serving people, and grow beyond them entirely. Growing is one of the few things in life that is entirely self-determined. It has nothing to do with age, or experience, or permission. If you want to grow, just grow.</p>
+  <p class="bio">There is no real-life Superman, for my heroes are my parents. Be strong, be kind, independent, and unstoppable in what you love. One day the ball will stop dribbling and the paintbrush will no longer paint — so while the ball still dribbles, while the paint is still wet, <em>give it everything.</em></p>
+
+  <div class="sections">
+
+    <div class="section">
+      <div class="sl">Currently</div>
+      <ul>
+        <li><span class="li-text">Leading <a href="https://www.instagram.com/youthforsustainablepolicy/" target="_blank" rel="noopener">Youth for Sustainable Policy</a> — with my <span class="nat" id="nat">Ukrainian</span> members from 5 countries and counting.</span></li>
+        <li><span class="li-text">Absorbing French, Spanish, Korean, and Japanese like a sponge.<br>Languages are so incredibly fascinating. (Read up on Sociolinguistics!)</span></li>
+        <li><span class="li-text">Practising Conscious Leadership all day, every day.</span></li>
+        <li><span class="li-text">Writing my Children's book on Singaporean Food Heritage.<br>Interested in illustrating? <a href="mailto:meitongkimnyp@gmail.com">Email me!</a></span></li>
+        <li><span class="li-text">Filming ideas for content creation.</span></li>
+        <li><span class="li-text">Building systems, breaking systems, and deciding which ones deserve to be rebuilt.</span></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="sl">Previously</div>
+      <ul>
+        <li><span class="li-text">Founded Social Issues Bubble — grew it to a 12-person team across 7 countries.</span></li>
+        <li><span class="li-text">Side quested so much my CV is 6 pages long RAW.</span></li>
+        <li><span class="li-text">Spent a lot of time asking the right questions before I found the right rooms to ask them in.</span></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="sl">Outside of work</div>
+      <ul>
+        <li><span class="li-text">Most fanatic lover of Chagee you will ever meet. I will name every ingredient and tell you what tea leaf it is with both eyes closed.</span></li>
+        <li><span class="li-text">Obsessed with 野人先生 ice cream. I get it as a treat every time.</span></li>
+        <li><span class="li-text">I sketch people. I photograph plants. I have what people call an eye for things — I think I just notice the niche.</span></li>
+        <li><span class="li-text">In a parallel life, I am studying Herbology, brewing potions, and talking to animals all afternoon. #Vegan</span></li>
+        <li><span class="li-text">Or I'm a professor at Cambridge. Both options are very much on the table. Who knows?</span></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="sl">Building towards</div>
+      <ul>
+        <li><span class="li-text">Starting a creative agency — where strategy meets story, and both actually mean something.</span></li>
+        <li><span class="li-text">A seat at the government table. Policy built by people who understand people.</span></li>
+        <li><span class="li-text">The best ideas sit at the intersection of art, language, and power. I intend to find them all.</span></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- ══ PUZZLE ══ -->
+  <div class="puzz">
+    <p class="p-title">// drag and drop — build mei tong's profile</p>
+
+    <div class="chip-groups">
+      <div>
+        <p class="chip-group-label">Who she is</p>
+        <div class="chips" id="grp1">
+          <div class="chip" draggable="true">Founder</div>
+          <div class="chip" draggable="true">Linguist</div>
+          <div class="chip" draggable="true">Artist</div>
+          <div class="chip" draggable="true">Creator</div>
+          <div class="chip" draggable="true">Dreamer</div>
+        </div>
+      </div>
+      <div>
+        <p class="chip-group-label">What she cares about</p>
+        <div class="chips" id="grp2">
+          <div class="chip" draggable="true">Climate Justice</div>
+          <div class="chip" draggable="true">Language</div>
+          <div class="chip" draggable="true">Policy</div>
+          <div class="chip" draggable="true">Stories</div>
+          <div class="chip" draggable="true">People</div>
+        </div>
+      </div>
+      <div>
+        <p class="chip-group-label">What she's building</p>
+        <div class="chips" id="grp3">
+          <div class="chip" draggable="true">An Agency</div>
+          <div class="chip" draggable="true">YSP</div>
+          <div class="chip" draggable="true">Systems</div>
+          <div class="chip" draggable="true">A Legacy</div>
+          <div class="chip" draggable="true">Change</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slot-row">Mei Tong is a <div class="slot" id="s1">drop here</div></div>
+    <div class="slot-row">who cares about <div class="slot" id="s2">drop here</div></div>
+    <div class="slot-row">and is building <div class="slot" id="s3">drop here</div></div>
+    <button class="rbtn" id="rst">↺ reset</button>
+  </div>
+
+  <!-- ══ TESTIMONIALS CAROUSEL ══ -->
+  <div class="carousel-wrap">
+    <div class="carousel-header">
+      <div class="sl" style="flex:1;margin-bottom:0">Recommendations received</div>
+      <div class="carousel-nav">
+        <button class="cnav-btn" id="cprev" aria-label="Previous">&#8592;</button>
+        <button class="cnav-btn" id="cnext" aria-label="Next">&#8594;</button>
+      </div>
+    </div>
+
+    <div class="carousel-track" id="ctrack">
+
+      <!-- Slide 1: Kateryna -->
+      <div class="c-card active" data-idx="0">
+        <div class="c-header">
+          <div class="c-avatar av2">K</div>
+          <div class="c-meta">
+            <p class="c-name">Kateryna Khokhlova</p>
+            <p class="c-role">Research Manager, Youth for Sustainable Policy<br>Author, Social Issues Bubble</p>
+            <p class="c-date">April 7, 2026 · Kateryna reported to Mei Tong directly</p>
+          </div>
+        </div>
+        <div class="c-divider"></div>
+        <div class="c-quote-mark">"</div>
+        <p class="c-text">While working with Mei, I found out more about her not only as a founder of organisations like SIB, Palimpsest, and YSP, but also as a kind companion. She balances open-minded and thoughtful leadership with the qualities of a supportive friend and an understanding person. Mei will be an irreplaceable addition to any organisation; if she chooses to pursue a certain path, you can be undoubtedly sure of the quality of her work and reliability.</p>
+      </div>
+
+      <!-- Slide 2: Donovan -->
+      <div class="c-card" data-idx="1">
+        <div class="c-header">
+          <div class="c-avatar av3">D</div>
+          <div class="c-meta">
+            <p class="c-name">Donovan Chow</p>
+            <p class="c-role">COO, Youth for Sustainable Policy<br>Student, Marist Stella High School</p>
+            <p class="c-date">March 24, 2026 · Worked with Mei Tong on the same team</p>
+          </div>
+        </div>
+        <div class="c-divider"></div>
+        <div class="c-quote-mark">"</div>
+        <p class="c-text">Mei Tong consistently demonstrates exceptional leadership, taking initiative in group settings and guiding others with both confidence and empathy. Her marketing instincts are highly commendable — she possesses a keen understanding of audience engagement and is able to present ideas in a persuasive and strategic manner. On a personal level, Mei Tong has had a profound influence on my academic journey. Her patience and belief in my abilities gave me the confidence to overcome challenges and achieve results I had not thought possible. I strongly recommend her without reservation.</p>
+      </div>
+
+      <!-- Slide 3: Gay -->
+      <div class="c-card" data-idx="2">
+        <div class="c-header">
+          <div class="c-avatar av4">G</div>
+          <div class="c-meta">
+            <p class="c-name">Gay Zulfikar</p>
+            <p class="c-role">Social Media Manager, Youth for Sustainable Policy<br>Student, Nanyang Polytechnic</p>
+            <p class="c-date">March 27, 2026 · Studied together</p>
+          </div>
+        </div>
+        <div class="c-divider"></div>
+        <div class="c-quote-mark">"</div>
+        <p class="c-text">Mei Tong is a hardworking and earnest individual who strives for perfection in everything she does. She is a great team player who always takes initiative and leads projects. She participates in various co-curricular activities and is well-versed in social media marketing. If there is a topic or challenge she faces, she will first learn more about it and broaden her perspective. Overall, she is a virtuous friend and an amazing person to have on the team.</p>
+      </div>
+
+      <!-- Slide 4: Harman -->
+      <div class="c-card" data-idx="3">
+        <div class="c-header">
+          <div class="c-avatar av1">H</div>
+          <div class="c-meta">
+            <p class="c-name">Harman Hunjan</p>
+            <p class="c-role">Director of Editorial &amp; Design Team<br>Social Issues Bubble</p>
+            <p class="c-date">2025 · Collaborated as partner on joint projects</p>
+          </div>
+        </div>
+        <div class="c-divider"></div>
+        <div class="c-quote-mark">"</div>
+        <p class="c-text">Kim has consistently demonstrated exceptional leadership that blends intellectual rigor with empathy-led innovation. Her management style stands out for its cooperative and inclusive approach — she fosters an environment where team members feel empowered to contribute. What truly sets Kim apart is her openness to unique and diverse ideas. She welcomes fresh perspectives, encouraging critical thinking and challenging narratives without hesitation. Working with Kim has been inspiring and productive. I wholeheartedly recommend her as a visionary leader and collaborative partner.</p>
+      </div>
+
+    </div>
+
+    <div class="c-dots" id="cdots">
+      <button class="c-dot active" data-i="0"></button>
+      <button class="c-dot" data-i="1"></button>
+      <button class="c-dot" data-i="2"></button>
+      <button class="c-dot" data-i="3"></button>
+    </div>
+  </div>
+
+  <!-- ══ CLOSING ══ -->
+  <p class="closing">
+    I feel like I could do anything and everything.<br>
+    I know one lifetime probably isn't enough.<br>
+    <em>So I'm making it count.</em>
+  </p>
+
+  <!-- ══ FLOWER ══ -->
+  <div class="flw-area" id="fa">
+    <button class="fbtn" id="fb">Press here to leave a 🌷 for the next person</button>
+    <p class="fctr" id="fctr">be the first to leave a tulip</p>
+    <p class="ftotal" id="ftotal"></p>
+  </div>
+
+  <!-- ══ CONTACT ══ -->
+  <div class="contact">
+    <a href="mailto:meitongkimnyp@gmail.com">meitongkimnyp@gmail.com</a>
+    <span class="sep">×</span>
+    <a href="https://www.linkedin.com/in/mei-tong-kim-505544311/" target="_blank" rel="noopener">LinkedIn</a>
+    <span class="sep">×</span>
+    <a href="https://www.instagram.com/luvyxvn/" target="_blank" rel="noopener">Instagram</a>
+  </div>
+
+</div>
+
+<div class="watermark">Singapore · 2026</div>
+
+<script>
+// ── Cursor ──
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+(function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);})();
+document.querySelectorAll('a,button,.chip,.omm-tag').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.width='14px';cursor.style.height='14px';ring.style.width='48px';ring.style.height='48px';ring.style.opacity='.25';});
+  el.addEventListener('mouseleave',()=>{cursor.style.width='8px';cursor.style.height='8px';ring.style.width='32px';ring.style.height='32px';ring.style.opacity='.5';});
+});
+
+// ── Greeting typer ──
+const G=['Hi!','Bonjour!','¡Hola!','안녕하세요!','こんにちは!','Ciao!','Hallo!','你好！','Salut!','Merhaba!','Olá!','Kamusta!','Xin chào!','Привет!','नमस्ते!','Sawubona!','Ahoj!','Hej!','Salam!','Γεια σου!','Shalom!','Habari!','Hei!','Cześć!'];
+const gEl=document.getElementById('gr');
+let gi=0,gc=0,gd=false;
+function tg(){const w=G[gi];if(!gd){gc++;gEl.textContent=w.slice(0,gc);if(gc===w.length){setTimeout(()=>{gd=true;tg();},1400);return;}setTimeout(tg,88);}else{gc--;gEl.textContent=w.slice(0,gc);if(gc===0){gd=false;gi=(gi+1)%G.length;setTimeout(tg,200);return;}setTimeout(tg,54);}}
+setTimeout(tg,1400);
+
+// ── Role typer ──
+const R=['Founder','Marketer','Artist','Creator','Linguist','Builder','Dreamer','Storyteller','Policy Nerd','Changemaker','Educator','Advocate','System-Breaker','Author'];
+const rEl=document.getElementById('rw');
+let ri=0,rc=0,rd=false;
+function tr(){const w=R[ri];if(!rd){rc++;rEl.textContent=w.slice(0,rc);if(rc===w.length){setTimeout(()=>{rd=true;tr();},1900);return;}setTimeout(tr,78);}else{rc--;rEl.textContent=w.slice(0,rc);if(rc===0){rd=false;ri=(ri+1)%R.length;setTimeout(tr,180);return;}setTimeout(tr,48);}}
+setTimeout(tr,1700);
+
+// ── Nationality switcher ──
+const N=['Ukrainian','American','Indonesian','Indian','Chinese','Filipino'];
+const nEl=document.getElementById('nat');
+let ni=0;
+setInterval(()=>{ni=(ni+1)%N.length;nEl.style.opacity='0';setTimeout(()=>{nEl.textContent=N[ni];nEl.style.opacity='1';},380);},2700);
+
+// ── Puzzle drag & drop ──
+const slots=[document.getElementById('s1'),document.getElementById('s2'),document.getElementById('s3')];
+let drag=null;
+let allChips=[];
+document.querySelectorAll('.chip').forEach(c=>{
+  allChips.push(c);
+  c.addEventListener('dragstart',()=>{drag=c;requestAnimationFrame(()=>c.classList.add('dragging'));});
+  c.addEventListener('dragend',()=>{c.classList.remove('dragging');});
+});
+slots.forEach(s=>{
+  s.addEventListener('dragover',e=>{e.preventDefault();s.classList.add('over');});
+  s.addEventListener('dragleave',()=>s.classList.remove('over'));
+  s.addEventListener('drop',e=>{
+    e.preventDefault();s.classList.remove('over');
+    if(!drag||s.classList.contains('filled'))return;
+    s.textContent=drag.textContent;s.classList.add('filled');
+    drag.classList.add('used');drag=null;
+  });
+});
+document.getElementById('rst').addEventListener('click',()=>{
+  slots.forEach(s=>{s.textContent='drop here';s.classList.remove('filled');});
+  allChips.forEach(c=>c.classList.remove('used','dragging'));drag=null;
+});
+
+// ── Carousel ──
+const cards=document.querySelectorAll('.c-card');
+const dots=document.querySelectorAll('.c-dot');
+let current=0,isAnimating=false;
+let autoTimer=null;
+
+function goTo(idx,dir=1){
+  if(isAnimating||idx===current)return;
+  isAnimating=true;
+  const old=cards[current];
+  const next=cards[idx];
+  old.style.animation='none';
+  next.style.animation='none';
+  old.classList.add('leaving');
+  old.classList.remove('active');
+  next.classList.add('active');
+  dots[current].classList.remove('active');
+  dots[idx].classList.add('active');
+  current=idx;
+  setTimeout(()=>{old.classList.remove('leaving');isAnimating=false;},350);
+  resetAuto();
+}
+
+function resetAuto(){clearInterval(autoTimer);autoTimer=setInterval(()=>goTo((current+1)%cards.length),6000);}
+
+document.getElementById('cnext').addEventListener('click',()=>goTo((current+1)%cards.length));
+document.getElementById('cprev').addEventListener('click',()=>goTo((current-1+cards.length)%cards.length));
+dots.forEach(d=>d.addEventListener('click',()=>goTo(+d.dataset.i)));
+resetAuto();
+
+// ── Tulip with localStorage persistence ──
+const fb=document.getElementById('fb');
+const fa=document.getElementById('fa');
+const fctr=document.getElementById('fctr');
+const ftotal=document.getElementById('ftotal');
+
+let fc=0;
+try { fc=parseInt(localStorage.getItem('tulip_count')||'0',10); } catch(e){}
+function updateTulipDisplay(){
+  if(fc===0){fctr.textContent='be the first to leave a tulip';ftotal.textContent='';}
+  else if(fc===1){fctr.textContent='1 tulip left for the next visitor 🌿';ftotal.textContent='';}
+  else{fctr.textContent=fc+' tulips left for the next visitor 🌿';ftotal.textContent='';}
+}
+updateTulipDisplay();
+
+fb.addEventListener('click',()=>{
+  fc++;
+  try{localStorage.setItem('tulip_count',fc);}catch(e){}
+  updateTulipDisplay();
+  const t=document.createElement('div');
+  t.className='tulip';t.textContent='🌷';
+  const br=fb.getBoundingClientRect();
+  const ar=fa.getBoundingClientRect();
+  t.style.left=(br.left-ar.left+br.width/2-12+(Math.random()*60-30))+'px';
+  t.style.top=(br.top-ar.top-10)+'px';
+  fa.appendChild(t);
+  setTimeout(()=>t.remove(),1500);
+});
+</script>
+</body>
+</html>
